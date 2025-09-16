@@ -20,7 +20,7 @@ func ExampleSan() {
 	for v := range sama.San[int, string](ch, func(v int) string {
 		time.Sleep(time.Duration(v) * 100 * time.Millisecond)
 		return strconv.Itoa(v)
-	}) {
+	}, 2) {
 		_, _ = buf.WriteString(v)
 	}
 	fmt.Println(buf.String())

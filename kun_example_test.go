@@ -2,6 +2,7 @@ package sama_test
 
 import (
 	"fmt"
+	"sync/atomic"
 
 	"github.com/rvflash/sama"
 )
@@ -13,10 +14,10 @@ func ExampleKun() {
 	ch <- 3
 	close(ch)
 
-	var sum int
+	var sum atomic.Int32
 	sama.Kun[int](ch, func(v int) {
-		sum += v
+		sum.Add(int32(v))
 	})
-	fmt.Println(sum)
+	fmt.Println(sum.Load())
 	// Output: 6
 }
