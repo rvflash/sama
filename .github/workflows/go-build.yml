@@ -19,10 +19,12 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '1.25'
-      - name: Run coverage
-        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
-      - name: Upload coverage to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
+      - name: Run tests with data race detection
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
   test:
     strategy:
       matrix:
