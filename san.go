@@ -4,6 +4,8 @@ import (
 	"sync"
 )
 
+// San is like Chan but guarantees that the output preserves the input order.
+// The i-th value read from ch produces the i-th value on the returned channel.
 func San[Ti, To any](ch <-chan Ti, do func(v Ti) To, concurrency ...int) chan To {
 	type (
 		req struct {

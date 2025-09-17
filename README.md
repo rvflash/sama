@@ -43,6 +43,39 @@ go get github.com/rvflash/sama
 
 ## Patterns & tips
 
+### Sample use-case
+
+```go
+var (
+    in = make(chan string)
+    // San preserves input order in the output.
+    out = sama.San(in, func(s string) string {
+        // Simulate variable latency to show ordering guarantee.
+        if s == "bravo" {
+            time.Sleep(50 * time.Millisecond)
+        }
+        return strings.ToUpper(s)
+    })
+)
+
+go func() {
+    for _, v := range []string{"alpha", "bravo", "charlie", "delta"} {
+        in <- v
+    }
+    close(in)
+}()
+
+// Order matches the input exactly.
+for res := range out {
+    fmt.Println(res)
+}
+// Output: 
+// ALPHA
+// BRAVO
+// CHARLIE
+// DELTA
+```
+
 ### Backpressure & buffering
 
 The input channel acts as backpressure. If producers outpace consumers, either:
