@@ -8,12 +8,13 @@
 
 Tiny, fast, generic worker pools for Go.
 
-`sama` exposes three functions with the same spirit and different guarantees:
+`sama` exposes 4 functions with the same spirit and different guarantees:
 * `Kun`, fire-and-forget: process items from a channel with a worker pool, no output.
 * `Chan`, unordered: process items from a channel with a worker pool, returns results as they are ready.
 * `San`, ordered: same as `Chan`, but preserves input order in the output stream.
+* `Tsu`, It iterates from 0 to n (not included), calling “do” for each value and returning the results in order.
 
-All three stop naturally when the input channel is closed and all in-flight work finishes.
+All functions stop naturally when the input channel is closed and all in-flight work finishes.
 
 Go ≥ 1.25 (no external dependency, only uses generics and the new `Go` function from `sync.WaitGroup`).
 
@@ -29,6 +30,9 @@ func Chan[Ti, To any](ch <-chan Ti, do func(v Ti) To, concurrency ...int) chan T
 // San is like Chan but guarantees that the output preserves the input order.
 // The i-th value read from ch produces the i-th value on the returned channel.
 func San[Ti, To any](ch <-chan Ti, do func(v Ti) To, concurrency ...int) chan To
+
+// Tsu iterates from 0 to n (not included), calling “do” for each value and returning the results in order.
+func Tsu[To any](n int, do func(v int) To, concurrency ...int) chan To
 ```
 
 > `concurrency` is optional. If omitted, `sama` uses an arbitrary default (2x`runtime.NumCPU()`).
@@ -109,14 +113,15 @@ When to choose which:
 * `Kun`: side effects only (DB writes, HTTP calls where you handle errors internally).
 * `Chan`: maximum throughput, order doesn’t matter (idempotent / commutative workloads).
 * `San`: streaming and order matters (like re-sequencing responses for a client).
+* `Tsu`: running in parallel a function iterating from 0 to n not included, returning the result in order.
 
 
 ## Guarantees
 
 * No leaks: all goroutines exit once the input channel is closed and all work completes.
 * Ordering:
-  - `San` stable (input index order).
+  - `San`, `Tsu` stable (input index order).
   - `Chan` none (as-completed).
 * Throughput:
   - `Chan` tends to be the fastest.
-  - `San` adds a tiny reorder buffer proportional to “out-of-order window”.
+  - `San`, `Tsu` add a tiny reorder buffer proportional to “out-of-order window”.
