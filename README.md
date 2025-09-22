@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/rvflash/sama?status.svg)](https://godoc.org/github.com/rvflash/sama)
 [![Build Status](https://github.com/rvflash/sama/workflows/build/badge.svg)](https://github.com/rvflash/sama/actions?workflow=build)
-[![Code Coverage](https://codecov.io/gh/rvflash/sama/branch/master/graph/badge.svg)](https://codecov.io/gh/rvflash/sama)
+[![Code Coverage](https://codecov.io/gh/rvflash/sama/branch/main/graph/badge.svg)](https://codecov.io/gh/rvflash/sama)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rvflash/sama?)](https://goreportcard.com/report/github.com/rvflash/sama)
 
 
